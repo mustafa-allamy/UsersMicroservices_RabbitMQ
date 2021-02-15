@@ -16,6 +16,7 @@
   <ItemGroup>
     <Folder Include="Interfaces\Services\" />
     <Folder Include="Templates\" />
+    <Folder Include="wwwroot\Emails\" />
   </ItemGroup>
 
   <ItemGroup>

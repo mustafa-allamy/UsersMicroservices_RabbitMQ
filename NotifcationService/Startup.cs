@@ -12,8 +12,11 @@ namespace NotifcationService
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment _environment;
+
+        public Startup(IConfiguration configuration,IWebHostEnvironment environment)
         {
+            _environment = environment;
             Configuration = configuration;
         }
 
@@ -47,7 +50,7 @@ namespace NotifcationService
                 EnableSsl = false,
                 Host = Configuration.GetSection("FluentEmail:Hostname").Value,
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
-                PickupDirectoryLocation = @"C:\testemail\"
+                PickupDirectoryLocation = _environment.WebRootPath+@"\Emails\"
             };
             services
                 .AddFluentEmail(Configuration.GetSection("FluentEmail:Sender").Value)
