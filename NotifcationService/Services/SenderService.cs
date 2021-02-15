@@ -22,6 +22,7 @@ namespace NotifcationService.Services
             _appId = oneSignalOptions.Value.AppId;
         }
 
+
         public async Task SendNotification(string header, string content, List<string> externalUserIds)
         {
             var client = new OneSignalClient(_apiKey); // Use your Api Key
