@@ -59,7 +59,7 @@ namespace UserService.Controllers
             }
             return Ok(new ClientResponse<bool>(serviceResponse.Value));
         }
-        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(typeof(ClientResponse<List<UserDto>>), 200)]
         [ProducesResponseType(typeof(ClientResponse<string>), 400)]
         [ProducesResponseType(typeof(void), 204)]
