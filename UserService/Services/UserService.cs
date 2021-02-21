@@ -50,9 +50,8 @@ namespace UserService.Services
                 Email = user.Email,
             };
 
-            var json = JsonConvert.SerializeObject(added);
-            _dataSender.SendData(json, "AddUser");
-            _dataSender.SendData(json, "UserAddedNotification");
+            _dataSender.SendData(JsonConvert.SerializeObject(user), "AddUser");
+            _dataSender.SendData(JsonConvert.SerializeObject(added), "UserAddedNotification");
             await _userRepository.Insert(user);
             await _userRepository.Commit();
 
@@ -99,9 +98,8 @@ namespace UserService.Services
                 Name = user.FullName,
                 UserId = user.Id
             };
-            var json = JsonConvert.SerializeObject(updated);
-            _dataSender.SendData(json, "UpdateUser");
-            _dataSender.SendData(json, "UserUpdatedNotification");
+            _dataSender.SendData(JsonConvert.SerializeObject(user), "UpdateUser");
+            _dataSender.SendData(JsonConvert.SerializeObject(updated), "UserUpdatedNotification");
             return new ServiceResponse<bool>(true);
         }
 
