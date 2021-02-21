@@ -8,5 +8,7 @@ namespace AuthService.Interfaces.Services
     public interface IUserService
     {
         Task<ServiceResponse<User>> DoLogin(LoginDto form);
+        Task<ServiceResponse<UserDto>> AddUser(User form);
+        Task<ServiceResponse<bool>> UpdateUser(User form);
     }
 }

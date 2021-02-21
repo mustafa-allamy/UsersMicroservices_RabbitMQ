@@ -1,6 +1,6 @@
 ﻿using Infrastructure;
 using Models.Models;
-using UserService.Interfaces;
+using UserService.Interfaces.Repositories;
 
 namespace UserService.Repositories
 {

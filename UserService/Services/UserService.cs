@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UserService.Interfaces;
+using UserService.Interfaces.Repositories;
 using UserService.Interfaces.Services;
 using Cipher = BCrypt.Net.BCrypt;
 
@@ -44,9 +44,15 @@ namespace UserService.Services
                 PhoneNumber = form.PhoneNumber,
                 Role = form.Role
             };
-            var json = JsonConvert.SerializeObject(user);
-            _dataSender.SendData(json, "AuthQueue");
+            var added = new UserAddedNotificationDto()
+            {
+                Name = user.FullName,
+                Email = user.Email,
+            };
 
+            var json = JsonConvert.SerializeObject(added);
+            _dataSender.SendData(json, "AddUser");
+            _dataSender.SendData(json, "UserAddedNotification");
             await _userRepository.Insert(user);
             await _userRepository.Commit();
 
@@ -87,9 +93,15 @@ namespace UserService.Services
 
             await _userRepository.Update(user);
             await _userRepository.Commit();
-            var json = JsonConvert.SerializeObject(user);
-            _dataSender.SendData(json, "AuthQueue");
-            _dataSender.SendData(json, "NotificationQueue");
+            var updated = new UserUpdatedNotificationDto()
+            {
+                Email = user.Email,
+                Name = user.FullName,
+                UserId = user.Id
+            };
+            var json = JsonConvert.SerializeObject(updated);
+            _dataSender.SendData(json, "UpdateUser");
+            _dataSender.SendData(json, "UserUpdatedNotification");
             return new ServiceResponse<bool>(true);
         }
 

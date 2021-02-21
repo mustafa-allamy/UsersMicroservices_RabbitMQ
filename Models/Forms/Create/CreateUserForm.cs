@@ -2,7 +2,7 @@
 
 namespace Models.Forms.Create
 {
-    public class CreateUserForm
+    public class CreateUserForm : ICreateUserForm
     {
         [Required]
         public string FullName { get; set; }

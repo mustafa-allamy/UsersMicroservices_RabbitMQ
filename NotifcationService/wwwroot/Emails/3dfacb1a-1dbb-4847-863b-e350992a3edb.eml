@@ -1,0 +1,12 @@
+X-Sender: test@mail.com
+X-Receiver: test@test.test
+MIME-Version: 1.0
+From: test@mail.com
+To: test@test.test
+Date: 21 Feb 2021 15:10:17 +0300
+Subject: test email subject
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: base64
+
+RGVhciAsIFlvdXIgbmV3IGFjY291bnQgaW5mb3JtYXRpb24gaGFzIGJlZW4gdXBkYXRl
+ZA==

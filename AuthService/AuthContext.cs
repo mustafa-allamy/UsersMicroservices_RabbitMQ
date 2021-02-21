@@ -36,5 +36,9 @@ namespace AuthService
             });
         }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace NotifcationService.Interfaces.Services
@@ -12,7 +13,7 @@ namespace NotifcationService.Interfaces.Services
         /// <param name="content"></param>
         /// <param name="externalUserIds"></param>
         /// <returns></returns>
-        Task SendNotification(string header, string content, List<string> externalUserIds);
+        Task SendNotification(string header, string content, List<Guid> externalUserIds);
         /// <summary>
         /// Use to send notification to segment
         /// </summary>

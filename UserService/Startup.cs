@@ -11,7 +11,7 @@ using RabbitMQService;
 using RabbitMQService.Sender;
 using System.Collections.Generic;
 using System.Text;
-using UserService.Interfaces;
+using UserService.Interfaces.Repositories;
 using UserService.Interfaces.Services;
 using UserService.Repositories;
 
@@ -38,7 +38,7 @@ namespace UserService
             services.Configure<RabbitMqConfiguration>(serviceClientSettingsConfig);
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, Services.UserService>();
-            services.AddSingleton<IDataSender, DataSender>();
+            services.AddScoped<IDataSender, DataSender>();
 
             services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(configureOptions: jwtBearerOptions =>

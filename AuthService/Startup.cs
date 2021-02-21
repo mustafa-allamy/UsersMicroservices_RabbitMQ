@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RabbitMQService;
+using System;
 using System.Text;
 
 namespace AuthService
@@ -29,21 +30,28 @@ namespace AuthService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AuthContext>(options =>
-                options.UseNpgsql("ConnectionStrings:Local"));
+                options.UseNpgsql("ConnectionStrings:Local"), ServiceLifetime.Scoped);
             services.AddCors(o => o.AddPolicy("TestEnv",
                 builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }));
             var serviceClientSettingsConfig = Configuration.GetSection("RabbitMq");
             var serviceClientSettings = serviceClientSettingsConfig.Get<RabbitMqConfiguration>();
-            services.Configure<RabbitMqConfiguration>(serviceClientSettingsConfig);
+
+            serviceClientSettings.QueueName = "AddUser";
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserService, UserService>();
 
 
-            services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IUserService, UserService>();
             if (serviceClientSettings.Enabled)
             {
-                services.AddHostedService<Receive>();
+                services.AddHostedService(x => new AddUserConsumer(serviceClientSettings, x.GetRequiredService<IServiceProvider>()));
             }
-
+            var secoundClient = (RabbitMqConfiguration)serviceClientSettings.Shallowcopy();
+            secoundClient.QueueName = "UpdateUser";
+            if (serviceClientSettings.Enabled)
+            {
+                services.AddHostedService(x => new UpdateUserConsumer(secoundClient, x.GetRequiredService<IServiceProvider>()));
+            }
             services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(configureOptions: jwtBearerOptions =>
                 {
@@ -78,7 +86,8 @@ namespace AuthService
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AuthService v1"));
             }
-
+            var scope = app.ApplicationServices.CreateScope();
+            var service = scope.ServiceProvider.GetService<AuthContext>();
             app.UseHttpsRedirection();
             app.UseCors("TestEnv");
             app.UseAuthentication();

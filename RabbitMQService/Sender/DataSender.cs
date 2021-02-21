@@ -17,8 +17,6 @@ namespace RabbitMQService.Sender
             _hostname = rabbitMqOptions.Value.Hostname;
             _username = rabbitMqOptions.Value.UserName;
             _password = rabbitMqOptions.Value.Password;
-
-
             CreateConnection();
         }
 

@@ -2,7 +2,10 @@
 {
     public class RabbitMqConfiguration
     {
-
+        public object Shallowcopy()
+        {
+            return this.MemberwiseClone();
+        }
         public string Hostname { get; set; }
 
         public string UserName { get; set; }

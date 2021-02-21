@@ -1,36 +1,30 @@
 ﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Models.Models;
-using Newtonsoft.Json;
-using NotifcationService.Interfaces.Services;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using RabbitMQService;
-using System.Collections.Generic;
+using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NotifcationService.Services
+namespace RabbitMQService.Consumer
 {
-    public class Receive : BackgroundService
+    public class GenericConsumer : BackgroundService
     {
-        private readonly ISenderService _senderService;
+        public IServiceProvider _serviceProvider;
         private IModel _channel;
         private IConnection _connection;
         private readonly string _hostname;
-        private readonly string _queueName;
+        public string _queueName;
         private readonly string _username;
         private readonly string _password;
 
-        public Receive(IOptions<RabbitMqConfiguration> rabbitMqOptions, ISenderService senderService)
+        public GenericConsumer(RabbitMqConfiguration rabbitMqOptions, IServiceProvider serviceProvider)
         {
-            _senderService = senderService;
-            _hostname = rabbitMqOptions.Value.Hostname;
-            _username = rabbitMqOptions.Value.UserName;
-            _password = rabbitMqOptions.Value.Password;
-            _queueName = rabbitMqOptions.Value.QueueName;
-
+            _serviceProvider = serviceProvider;
+            _hostname = rabbitMqOptions.Hostname;
+            _username = rabbitMqOptions.UserName;
+            _password = rabbitMqOptions.Password;
+            _queueName = rabbitMqOptions.QueueName;
             InitializeRabbitMqListener();
         }
 
@@ -56,9 +50,8 @@ namespace NotifcationService.Services
             consumer.Received += async (ch, ea) =>
             {
                 var content = Encoding.UTF8.GetString(ea.Body.ToArray());
-                var updateCustomerFullNameModel = JsonConvert.DeserializeObject<User>(content);
 
-                await HandleMessage(updateCustomerFullNameModel);
+                await HandleMessage(content);
 
                 _channel.BasicAck(ea.DeliveryTag, false);
             };
@@ -68,21 +61,11 @@ namespace NotifcationService.Services
             return Task.CompletedTask;
         }
 
-        private async Task HandleMessage(User user)
+        public virtual async Task HandleMessage(string message)
         {
-            await _senderService.SendNotification(user.FullName, "Password Has Changed",
-                new List<string>() { user.Id.ToString() });
-            await _senderService.SendEmail(user.Email, user.FullName, "Account Information Update",
-                "Your account info have been updated");
+
         }
 
 
-
-        public override void Dispose()
-        {
-            _channel.Close();
-            _connection.Close();
-            base.Dispose();
-        }
     }
 }
